@@ -271,7 +271,19 @@ async function approveCTFUniversalTransaction(privateKey: string): Promise<boole
             ],
         });
 
-        const sendResult = await universalAccount.sendTransaction(universalTransaction, wallet.signMessageSync(getBytes(universalTransaction.rootHash)));
+        // Handle 7702 Authorization
+        const authorizations: EIP7702Authorization[] = [];
+        for (const userOp of universalTransaction.userOps) {
+            if (!userOp.eip7702Delegated) {
+                const authorization = wallet.authorizeSync(userOp.eip7702Auth);
+                authorizations.push({
+                    userOpHash: userOp.userOpHash,
+                    signature: authorization.signature.serialized,
+                });
+            }
+        }
+
+        const sendResult = await universalAccount.sendTransaction(universalTransaction, wallet.signMessageSync(getBytes(universalTransaction.rootHash)), authorizations);
 
         console.log('sendResult.transactionId', sendResult.transactionId);
         console.log('explorer url', `https://universalx.app/activity/details?id=${sendResult.transactionId}`);
