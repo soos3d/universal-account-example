@@ -2,8 +2,6 @@
   "name": "universal-account-example",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "git@github.com:GDdark/universal-account-example.git",
-  "author": "GDdark <huangdongxc@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.11.24",
