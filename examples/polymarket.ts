@@ -18,26 +18,14 @@ import { formatUnits, getBytes, Wallet as WalletV6, Interface, parseUnits, JsonR
 
 config();
 
-const host = 'https://clob.polymarket.com';
 const privateKey = process.env.PRIVATE_KEY || '';
 const rpcUrl = process.env.EVM_RPC_137 || '';
-const providerV5 = new JsonRpcProviderV5(rpcUrl);
-const provider = new JsonRpcProvider(rpcUrl);
-// 代币地址
-const USDC_ADDRESS = '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359'; // USDC
-const USDC_E_ADDRESS = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'; // USDC.e
 
-// Uniswap V3 SwapRouter 地址
-const SWAP_ROUTER_ADDRESS = '0xE592427A0AEce92De3Edee1F18E0157C05861564';
-
-// SwapRouter ABI
-const SWAP_ROUTER_ABI = [
-    'function exactOutputSingle((address tokenIn, address tokenOut, uint24 fee, address recipient, uint256 deadline, uint256 amountOut, uint256 amountInMaximum, uint160 sqrtPriceLimitX96)) external payable returns (uint256 amountIn)',
-];
-
-const signer = new Wallet(privateKey, providerV5);
-const signatureType = 0;
 (async () => {
+    const host = 'https://clob.polymarket.com';
+    const signatureType = 0;
+    const providerV5 = new JsonRpcProviderV5(rpcUrl);
+    const signer = new Wallet(privateKey, providerV5);
     const creds = new ClobClient(host, 137, signer, undefined, signatureType).createOrDeriveApiKey();
 
     await approve('0.5');
@@ -60,6 +48,16 @@ const signatureType = 0;
 })();
 
 async function approve(amount: string) {
+    const provider = new JsonRpcProvider(rpcUrl);
+    const USDC_ADDRESS = '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359'; // USDC
+    const USDC_E_ADDRESS = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'; // USDC.e
+
+    const SWAP_ROUTER_ADDRESS = '0xE592427A0AEce92De3Edee1F18E0157C05861564';
+
+    const SWAP_ROUTER_ABI = [
+        'function exactOutputSingle((address tokenIn, address tokenOut, uint24 fee, address recipient, uint256 deadline, uint256 amountOut, uint256 amountInMaximum, uint160 sqrtPriceLimitX96)) external payable returns (uint256 amountIn)',
+    ];
+
     const erc20 = new Interface([
         'function approve(address spender, uint256 amount) returns (bool)',
         'function balanceOf(address account) view returns (uint256)',
@@ -67,7 +65,7 @@ async function approve(amount: string) {
     ]);
     // usdc.e
     const usdceContract = new Contract(USDC_E_ADDRESS, erc20, provider);
-    const wallet = new WalletV6(process.env.PRIVATE_KEY || '');
+    const wallet = new WalletV6(privateKey || '');
     const universalAccountConfig: IUniversalAccountConfig = {
         projectId: process.env.PROJECT_ID || '',
         projectClientKey: process.env.PROJECT_CLIENT_KEY || '',
@@ -104,7 +102,6 @@ async function approve(amount: string) {
             sqrtPriceLimitX96: 0,
         };
 
-        // 3. 构建交易数据
         const swapRouter = new Contract(SWAP_ROUTER_ADDRESS, SWAP_ROUTER_ABI, provider);
         const txData = swapRouter.interface.encodeFunctionData('exactOutputSingle', [params]);
         txs.push({
@@ -134,7 +131,7 @@ async function approve(amount: string) {
                 // exchangechange
                 to: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
                 data: erc20.encodeFunctionData('approve', ['0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E', parseUnits(amount, 6)]),
-            }
+            },
         ],
     });
 
