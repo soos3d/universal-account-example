@@ -32,14 +32,12 @@ config();
                 expectToken: { type: SUPPORTED_TOKEN_TYPE.USDT, amount: "0.0001" },
                 chainId: CHAIN_ID.BSC_MAINNET,
             },
-            {
-                usePrimaryTokens: [SUPPORTED_TOKEN_TYPE.BNB],
-            }
         );
 
+        // Handle 7702 Authorization
         const authorizations: EIP7702Authorization[] = [];
         for (const userOp of transaction.userOps) {
-            if (!userOp.eip7702Delegated) {
+            if (userOp.chainId !== CHAIN_ID.SOLANA_MAINNET && !userOp.eip7702Delegated) {
                 const authorization = wallet.authorizeSync(userOp.eip7702Auth);
                 authorizations.push({
                     userOpHash: userOp.userOpHash,

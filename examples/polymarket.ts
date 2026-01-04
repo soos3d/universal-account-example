@@ -274,7 +274,7 @@ async function approveCTFUniversalTransaction(privateKey: string): Promise<boole
         // Handle 7702 Authorization
         const authorizations: EIP7702Authorization[] = [];
         for (const userOp of universalTransaction.userOps) {
-            if (!userOp.eip7702Delegated) {
+            if (userOp.chainId !== CHAIN_ID.SOLANA_MAINNET && !userOp.eip7702Delegated) {
                 const authorization = wallet.authorizeSync(userOp.eip7702Auth);
                 authorizations.push({
                     userOpHash: userOp.userOpHash,
