@@ -54,18 +54,31 @@ const rpcUrl = process.env.EVM_RPC_137 || '';
     );
     console.log('Buy $1 response', response);
 
+    // add delay to make sure Polymarket has updated the balance
+    console.log('Waiting for 5 seconds to make sure Polymarket has updated the balance');
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
     // get all shares
     const balance = await clobClient.getBalanceAllowance({
         asset_type: AssetType.CONDITIONAL,
         token_id: polymaketTokenId
     });
     console.log('All shares', balance);
-    
-    // approve CTF
-    result = await approveCTFUniversalTransaction(privateKey);
-    if (!result) {
-        console.error('Failed to approve CTF Universal Transaction');
-        return;
+
+    // balance >= every allowance
+    let needApprove = false;
+    for (const allowance of Object.values((balance as any)?.allowances)) {
+        if (BigInt(balance.balance) > BigInt(allowance as string)) {
+            needApprove = true;
+        }
+    }
+    if (needApprove) {
+        // approve CTF
+        result = await approveCTFUniversalTransaction(privateKey);
+        if (!result) {
+            console.error('Failed to approve CTF Universal Transaction');
+            return;
+        }
     }
 
     // sell all shares
@@ -73,7 +86,7 @@ const rpcUrl = process.env.EVM_RPC_137 || '';
         {
             tokenID: polymaketTokenId,
             side: Side.SELL,
-            amount: Number(balance.balance),
+            amount: Number(formatUnits(balance.balance, 6)),
         },
         undefined,
         OrderType.FOK,
