@@ -23,12 +23,9 @@ const rpcUrl = process.env.EVM_RPC_137 || '';
     const signatureType = 0;
     const providerV5 = new JsonRpcProviderV5(rpcUrl);
     const signer = new Wallet(privateKey, providerV5);
-
-
     // @see https://polymarket.com/event/fed-decision-in-april
     const polymaketTokenId = '83479140651306794046790588004449066364152228067472874205697111967337978544729';
     const polymarketBuyAmount = 1;
-
     // @see https://github.com/Polymarket/clob-client
     const creds = new ClobClient(host, 137, signer, undefined, signatureType).createOrDeriveApiKey();
     const apiCreds = await creds;
@@ -43,6 +40,7 @@ const rpcUrl = process.env.EVM_RPC_137 || '';
     }
 
     const clobClient = new ClobClient(host, 137, signer, apiCreds, signatureType, undefined, undefined, true);
+
     // buy $1
     let response: any;
     response = await clobClient.createAndPostMarketOrder(
@@ -62,7 +60,7 @@ const rpcUrl = process.env.EVM_RPC_137 || '';
         token_id: polymaketTokenId
     });
     console.log('All shares', balance);
-
+    
     // approve CTF
     result = await approveCTFUniversalTransaction(privateKey);
     if (!result) {
