@@ -7,7 +7,7 @@ import {
     UNIVERSAL_ACCOUNT_VERSION,
     UniversalAccount,
 } from '@particle-network/universal-account-sdk';
-import { getBytes, Wallet } from 'ethers';
+import { getBytes, hashAuthorization, Wallet } from 'ethers';
 
 config();
 
@@ -37,15 +37,18 @@ config();
         const nonceMap = new Map<number, string>();
         for (const userOp of transaction.userOps) {
             if (!!userOp.eip7702Auth && !userOp.eip7702Delegated) {
-                let signature = nonceMap.get(userOp.eip7702Auth.nonce);
-                if (!signature) {
-                    const authorization = wallet.authorizeSync(userOp.eip7702Auth);
-                    signature = authorization.signature.serialized;
-                    nonceMap.set(userOp.eip7702Auth.nonce, signature);
+                let signatureSerialized = nonceMap.get(userOp.eip7702Auth.nonce);
+                if (!signatureSerialized) {
+                    // const authorization = wallet.authorizeSync(userOp.eip7702Auth);
+                    const dataHash = hashAuthorization(userOp.eip7702Auth);
+                    const signature = wallet.signingKey.sign(dataHash);
+                    signatureSerialized = signature.serialized;
+                    nonceMap.set(userOp.eip7702Auth.nonce, signatureSerialized);
                 }
+
                 authorizations.push({
                     userOpHash: userOp.userOpHash,
-                    signature: signature,
+                    signature: signatureSerialized,
                 });
             }
         }
