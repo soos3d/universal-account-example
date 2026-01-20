@@ -60,6 +60,7 @@ config();
                 }
             ],
             transactions: [
+                // create target token account if not exist
                 serializeInstruction(createAssociatedTokenAccountIdempotentInstruction(
                     new PublicKey(smartAccountOptions.solanaSmartAccountAddress as string),
                     targetUSDCTokenAccount,
