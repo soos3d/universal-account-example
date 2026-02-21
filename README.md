@@ -98,7 +98,7 @@ Subscribe with your smart account options to receive asset balance changes acros
     "name": "UNIVERSAL",
     "version": "1.0.3",
     "useEIP7702": false,
-    "solanaAccountIndex": 0  // optional, use with EIP-7702 mode
+    "solanaAccountIndex": "SOLANA_ACCOUNT_INDEX.CLASSIC"  // optional, use with EIP-7702 mode
   }
 }
 
@@ -115,10 +115,10 @@ Subscribe with your smart account options to receive asset balance changes acros
 
 The `solanaAccountIndex` param is optional and only relevant when using EIP-7702 mode. It controls which Solana address is used for asset tracking:
 
-| Value | Constant | Description |
-| --- | --- | --- |
-| `0` | `SOLANA_ACCOUNT_INDEX.CLASSIC` | Use the classic Solana smart account address |
-| `1` | `SOLANA_ACCOUNT_INDEX.EIP7702` | Use the EIP-7702 derived Solana address |
+| Constant | Description |
+| --- | --- |
+| `SOLANA_ACCOUNT_INDEX.CLASSIC` | Use the classic Solana smart account address |
+| `SOLANA_ACCOUNT_INDEX.EIP7702` | Use the EIP-7702 derived Solana address |
 
 See [user-assets-wss.ts](examples/user-assets-wss.ts) for a complete example that listens for balance updates in real time.
 
