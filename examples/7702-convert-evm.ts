@@ -23,6 +23,10 @@ config();
                 name: 'UNIVERSAL',
                 version: process.env.UNIVERSAL_ACCOUNT_VERSION || UNIVERSAL_ACCOUNT_VERSION,
                 ownerAddress: wallet.address,
+                // Optional: set solanaAccountIndex to control which Solana address is derived
+                // SOLANA_ACCOUNT_INDEX.CLASSIC (0) = use classic Solana smart account address
+                // SOLANA_ACCOUNT_INDEX.EIP7702 (1) = use EIP-7702 derived Solana address
+                // solanaAccountIndex: SOLANA_ACCOUNT_INDEX.CLASSIC,
             },
         };
 
