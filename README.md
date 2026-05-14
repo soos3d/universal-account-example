@@ -1,16 +1,38 @@
 # Universal Account Example
 
-Code examples for the [Particle Network Universal Account SDK](https://developers.particle.network/).
+Runnable TypeScript examples for the [@particle-network/universal-account-sdk](https://developers.particle.network/) (v1.1.1+). Universal Account abstracts cross-chain complexity into a single unified balance and address — you can buy, sell, transfer, and swap tokens across EVM chains and Solana without managing bridges or per-chain gas tokens.
+
+## Prerequisites
+
+- Node.js >= 18
+- yarn (or npm — `tsx` is included as a dev dependency)
+- A [Particle Network](https://dashboard.particle.network/) project with a `projectId`, `projectClientKey`, and `projectAppUuid`
 
 ## Quick Start
 
 1. `yarn`
-2. Copy `.env.example` to `.env` and fill in your own values
+2. Copy `.env.example` to `.env` and fill in your credentials (see [Environment Variables](#environment-variables))
 3. Run any example:
 
 ```bash
 npx tsx examples/buy-solana.ts
 ```
+
+After sending a transaction, examples print a link to `https://universalx.app/activity/details?id=<transactionId>` where you can track its status.
+
+## Environment Variables
+
+| Variable | Required | Description |
+| --- | --- | --- |
+| `PRIVATE_KEY` | Yes | EVM private key used by `ethers.Wallet` |
+| `PROJECT_ID` | Yes | Particle Network project ID |
+| `PROJECT_CLIENT_KEY` | Yes | Particle Network project client key |
+| `PROJECT_APP_UUID` | Yes | Particle Network project app UUID |
+| `EVM_RPC_<chainId>` | Situational | RPC URL for a specific chain (e.g. `EVM_RPC_56` for BSC, `EVM_RPC_137` for Polygon). Required by EIP-7702 examples. |
+| `UNIVERSAL_ACCOUNT_VERSION` | No | Override the SDK smart account version (defaults to the SDK constant) |
+| `UNIVERSALX_WSS_URL` | No | Override the WebSocket endpoint (defaults to `wss://universal-app-ws-proxy.particle.network`) |
+
+Get your project credentials from the [Particle Network Dashboard](https://dashboard.particle.network/).
 
 ## Examples
 
@@ -126,9 +148,9 @@ See [user-assets-wss.ts](examples/user-assets-wss.ts) for a complete example tha
 
 | Example | Description |
 | --- | --- |
-| [warmup.ts](examples/warmup.ts) | Initialization / warmup |
-| [polymarket.ts](examples/polymarket.ts) | Polymarket integration |
-| [test-svm-balance.ts](examples/test-svm-balance.ts) | Solana balance test suite |
+| [warmup.ts](examples/warmup.ts) | Initialize the SDK, resolve smart account addresses, and pre-fetch a token pair without sending a transaction |
+| [polymarket.ts](examples/polymarket.ts) | Place a Polymarket prediction market trade via Universal Account |
+| [test-svm-balance.ts](examples/test-svm-balance.ts) | Solana token balance helpers used for integration testing |
 
 ## Benchmark
 
